@@ -1,8 +1,15 @@
 ---
 title: ReplicaSet
-tags: ["K8S", "ReplicaSet", "RS", "쿠버네티스"] 
-categories: ["Kubernetes"]
 date: 2020-10-20 13:33:16
+categories: ["Kubernetes"]
+tags: ["K8S", "ReplicaSet", "RS", "쿠버네티스"] 
+toc: true
+widgets:
+  - type: toc
+    position: right
+sidebar:
+  right:
+    sticky: true
 ---
 ## ReplicaSet vs Replication Controller
 

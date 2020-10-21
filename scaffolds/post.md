@@ -1,6 +1,14 @@
 ---
 title: {{ title }}
 date: {{ date }}
-tags: []
 categories: []
+tags: []
+toc: true
+widgets:
+  - type: toc
+    position: right
+sidebar:
+  right:
+    sticky: true    
 ---
+
