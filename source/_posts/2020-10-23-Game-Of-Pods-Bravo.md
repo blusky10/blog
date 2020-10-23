@@ -11,8 +11,18 @@ sidebar:
     sticky: true
 date: 2020-10-23 09:27:58
 ---
+# KodeKloud-Game Of Pod
+https://kodekloud.com/p/game-of-pods
 
-# Solutions
+전부터 해봐야지 했던 Game Of Pod 를 이제야 끝마쳤다.
+
+처음에는 templete 들을 잘 몰라서 시간이 많이 걸렸는데 차츰차츰 해결을 해나가다 보니 익숙해졌다.
+
+pv 와 pvc, service 들은 상당히 간단하다.
+
+Deployment 의 env와 initContainer 와 Secret 을 눈여겨볼 필요가 있다.
+
+## Solutions
 
 ## drpal-pv-hostpath, drupal-mysql-pv-hostpath
 
@@ -23,10 +33,11 @@ date: 2020-10-23 09:27:58
   * mkdir /drupal-mysql-data
   * mkdir /drupal-data
 
-## drupal-mysql-pv, drupal-mysql-pvc
+## drupal-mysql-pv
 > Volume Name: drupal-mysql-pv  
 Storage: 5Gi  
 Access modes: ReadWriteOnce  
+
 - yaml
   ```
   apiVersion: v1
@@ -41,10 +52,12 @@ Access modes: ReadWriteOnce
   hostPath:
     path: /drupal-mysql-data
   ```
+
 ## drupal-mysql-pvc      
 > Claim Name: drupal-mysql-pvc  
 Storage Request: 5Gi  
 Access modes: ReadWriteOnce
+
 - yaml
   ```
   apiVersion: v1
@@ -57,12 +70,13 @@ Access modes: ReadWriteOnce
     resources:
       requests:
         storage: 5Gi
-## drupal-mysql-secret
+  ```
 
+## drupal-mysql-secret
 > Secret Name: drupal-mysql-secret  
 Secret: MYSQL_ROOT_PASSWORD=root_password  
 Secret: MYSQL_DATABASE=drupal-database  
-Secret: MYSQL_USER=root  
+Secret: MYSQL_USER=root
 
 - 값 인코딩
   ```
@@ -70,6 +84,7 @@ Secret: MYSQL_USER=root
   echo -n "drupal-database" | base64
   echo -n "root" | base64
   ```
+
 - yaml
   ```
   apiVersion: v1
@@ -82,17 +97,20 @@ Secret: MYSQL_USER=root
     MYSQL_DATABASE: ZHJ1cGFsLWRhdGFiYXNl
     MYSQL_USER: cm9vdA==
   ```
+
 - command line 으로 입력 하는 방법
   ```
   kubectl create secret generic drupal-mysql-secret --from-literal=MYSQL_ROOT_PASSWORD=root_password --from-literal=MYSQL_DATABASE=drupal-database --from-literal=MYSQL_USER=root  
   ```
+
 ## drupal-mysql
 > Name: drupal-mysql  
 Replicas: 1  
 Image: mysql:5.7  
 Deployment Volume uses PVC : drupal-mysql-pvc  
 Volume Mount Path: /var/lib/mysql, subPath: dbdata  
-Deployment: 'drupal-mysql' running  
+Deployment: 'drupal-mysql' running
+
 - yaml
   ```
   apiVersion: apps/v1
@@ -131,16 +149,18 @@ Deployment: 'drupal-mysql' running
           ports:
           - containerPort: 3306
             name: mysql
-            protocol: TCP    
+            protocol: TCP
           volumeMounts: 
           - mountPath: "/var/lib/mysql"
             name: mysql-volume
             subPath: dbdata
   ```
+
 ## drupal-mysql-service
 > Name: drupal-mysql-service  
 Type: ClusterIP  
-Port: 3306  
+Port: 3306
+
 - yaml
   ```
   apiVersion: v1
@@ -155,10 +175,12 @@ Port: 3306
     selector:
       app: drupal-mysql   
   ```
+
 ## drupal-pv
 > Access modes: ReadWriteOnce  
 Volume Name: drupal-pv  
 Storage: 5Gi
+
 - yaml
   ```
   apiVersion: v1
@@ -173,6 +195,7 @@ Storage: 5Gi
   hostPath:
     path: /drupal-data
   ```
+
 ## drupal-pvc
 > Claim Name: drupal-pvc  
 Storage Request: 5Gi  
@@ -192,8 +215,7 @@ Access modes: ReadWriteOnce
         storage: 5Gi      
   ```
 
-### drupal
-
+## drupal
 > Deployment Name: drupal  
 Replicas: 1  
 Image: drupal:8.6  
@@ -261,10 +283,12 @@ Deployment: 'drupal' has label 'app=drupal'
             persistentVolumeClaim:
               claimName: drupal-pvc
   ```
+  
 ## drupal-service
 > frontend service name: drupal-service  
 drupal-service configured as NodePort  
 drupal-service uses NodePort 30095
+
 - yaml
   ```
   apiVersion: v1
